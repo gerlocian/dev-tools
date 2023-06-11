@@ -1,0 +1,40 @@
+#!/bin/bash
+
+DEV_TOOLS_DIR=$(cd `dirname $0` && cd ../ && pwd)
+CONFIG_DIR=$DEV_TOOLS_DIR/config
+UTILS_DIR=$DEV_TOOLS_DIR/utilities
+
+UTILITY=$1
+ACTION=$2
+
+case $UTILITY in 
+    mongo)
+        TARGET="${UTILS_DIR}/databases/mongo/docker-compose.yaml"
+        ;;
+    mongo-admin)
+        TARGET="${UTILS_DIR}/databases/mongo-express/docker-compose.yaml"
+        ;;
+    postgres)
+        TARGET="${UTILS_DIR}/databases/postgresql/docker-compose.yaml"
+        ;;
+    postgres-admin)
+        TARGET="${UTILS_DIR}/databases/postgres-adminer/docker-compose.yaml"
+        ;;
+    *)
+        echo "INVALID UTILITY"
+        exit 1
+        ;;
+esac
+
+case $ACTION in
+    start)
+        docker compose --file=${TARGET} --env-file="${CONFIG_DIR}/environments/local.env" up --detach
+        ;;
+    stop)
+        docker compose --file=${TARGET} --env-file="${CONFIG_DIR}/environments/local.env" down
+        ;;
+    *)
+        echo "INVALID ACTION"
+        exit 1
+        ;;
+esac
